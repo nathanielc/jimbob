@@ -1,0 +1,9 @@
+[submodule "firmware/broadcom"]
+	path = firmware/broadcom
+	url = git://github.com/raspberrypi/firmware.git
+[submodule "sources/linux"]
+	path = sources/linux
+	url = git://github.com/raspberrypi/linux.git
+[submodule "tools/rasp_tools"]
+	path = tools/rasp_tools
+	url = git://github.com/raspberrypi/tools.git

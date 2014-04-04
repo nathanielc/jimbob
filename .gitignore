@@ -21,3 +21,12 @@
 *.i*86
 *.x86_64
 *.hex
+
+# Misc
+*.swp
+
+# External Sources
+ct_sources/*.tar.gz
+ct_sources/*.tar.bz2
+sources/*.tar.gz
+sources/*.tar.bz2
