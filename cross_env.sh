@@ -1,6 +1,7 @@
 #!/bin/bash
 
-TARGET="arm-unknown-linux-uclibcgnueabi-"
+# Note trailing - is intentional
+TARGET="${JB_TARGET}-"
 
 export CC="${TARGET}gcc"
 export CXX="${TARGET}g++"

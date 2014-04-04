@@ -22,7 +22,7 @@ unset CFLAGS
 unset CXXFLAGS
 
 export JB_ABI="aapcs-linux"
-export JB_HOST="x86_64-cross-linux-gnu"
+export JB_HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/")
 export JB_TARGET="arm-unknown-linux-uclibcgnueabi"
 export JB_ARCH="arm"
 export JB_ENDIAN="little"
