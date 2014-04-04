@@ -18,9 +18,12 @@ export JB_TOOLS=$DIR/tools
 export JB_CROSS_TOOLS=$DIR/cross-tools
 export LC_ALL=POSIX
 export PATH=${JB_CROSS_TOOLS}/bin:/bin:/usr/bin
+
+# Unset compile flags
 unset CFLAGS
 unset CXXFLAGS
 
+# Export arch info
 export JB_ABI="aapcs-linux"
 export JB_HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/")
 export JB_TARGET="arm-unknown-linux-uclibcgnueabi"
@@ -31,3 +34,10 @@ export JB_ARM_MODE="arm"
 export JB_FLOAT="hard"
 export JB_FPU="vfp"
 
+# Number of jobs make can run in parallel
+if [ $1 ]
+then
+	export JB_N_JOBS=$1
+else
+	export JB_N_JOBS=1
+fi

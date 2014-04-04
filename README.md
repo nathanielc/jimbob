@@ -41,8 +41,10 @@ Source build_env.sh and host_env.sh:
     $ source build_env.sh # common env
     $ source host_env.sh # env for host as target
 
+You will also notice a cross_env.sh script which will later be used to setup an env for cross compiling. Do not source it at this time. Sourcing host_env.sh will undo anything cross_env.sh does.
 
-You will also notice a cross_env.sh which will later be used to setup an env for cross compiling. Do not source it at this time. Sourcing host_env.sh will undo anything cross_env.sh does.
+Note: If you are impatient like me you can pass a number to build_env.sh and it will setup the env to tell make to run that number of jobs simultaneously.
+
 
 Setup basic file hierarchy
 --------------------------
@@ -60,8 +62,8 @@ Next we need to install the linux headers into our rootfs:
     $ sources/linux_headers.build
 
 
-Compile gcc for target arch
-----------------------------
+Compile gcc for cross compiling
+-------------------------------
 
 Now we need to compile various dependencies for gcc:
 
@@ -74,7 +76,7 @@ Next we need to compile gcc (first iteration)
 
     $ ct_sources/gcc1.build
 
-Then we compile uClibc:
+Then we compile uClibc (this will ask a question about EABI or OABI just choose the default EABI):
 
     $ ct_sources/uClibc.build
 
@@ -82,9 +84,22 @@ Finally we compile gcc for a final time:
 
     $ ct_sources/gcc2.build
 
+Breather
+--------
 
+At this point we have compiled gcc for your host system and enabled gcc to cross compile for your target system. Now we are ready to start compiling packages for the actual OS.
 
+Configure cross compile env
+---------------------------
 
+First before we can compile linux we need to setup our env to use gcc and friends that we just compiled.
 
+    $ source cross_env.sh 
 
+Compile Busybox
+---------------
+
+The first package we will compile for the target system is busybox:
+
+    $ sources/busybox.build
 

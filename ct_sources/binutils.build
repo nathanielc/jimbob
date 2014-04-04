@@ -7,7 +7,7 @@ release="a"
 cd $JB_CT_SRC
 tar -jxvf binutils-${version}${release}.tar.bz2 && mkdir -v binutils-build && cd binutils-build
 ../binutils-${version}/configure --prefix=${JB_CROSS_TOOLS} \
-   --target=${JB_TARGET} --with-sysroot=${JB} --disable-nls \
+   --target=${JB_TARGET} --with-sysroot=${JB_ROOT_FS} --disable-nls \
    --enable-shared --disable-multilib
 make configure-host
 make
