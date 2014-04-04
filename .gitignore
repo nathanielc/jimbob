@@ -30,3 +30,7 @@ ct_sources/*.tar.gz
 ct_sources/*.tar.bz2
 sources/*.tar.gz
 sources/*.tar.bz2
+
+# Dirs 
+rootfs
+cross-tools

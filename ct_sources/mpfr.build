@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+version="3.0.0"
+
+cd $JB_CT_SRC
+tar -jxvf mpfr-${version}.tar.bz2 && cd mpfr-${version}
+LDFLAGS="-Wl,-rpath,${JB_CROSS_TOOLS}/lib" \
+  ./configure --prefix=${JB_CROSS_TOOLS} --enable-shared \
+  --with-gmp=${JB_CROSS_TOOLS}
+make
+make install
+
+# Clean up build dir
+cd $JB_CT_SRC && rm -rf mpfr-${version}
