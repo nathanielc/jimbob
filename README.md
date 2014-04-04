@@ -23,12 +23,12 @@ Download Sources
 
 Run the download_sources.sh script to download all sources
 
-  $ ./download_sources.sh
+    $ ./download_sources.sh
 
 A few sources are git submodules so get those as well
 
-  $ git submodules init 
-  $ git submodules update
+    $ git submodules init 
+    $ git submodules update
 
 
 
