@@ -9,7 +9,7 @@ patch -Np1 -i $JB_SRC/busybox-${version}-ash.patch
 patch -Np1 -i $JB_SRC/busybox-${version}-date.patch
 patch -Np1 -i $JB_SRC/busybox-${version}-iplink.patch
 patch -Np1 -i $JB_SRC/busybox-${version}-nc.patch
-cp -v clfs/config .config
+cp -v $JB_SRC/busybox-${version}-config .config
 make oldconfig
 make CROSS_COMPILE="${JB_TARGET}-" -j $JB_N_JOBS
 make CROSS_COMPILE="${JB_TARGET}-" CONFIG_PREFIX="${JB_ROOT_FS}" install

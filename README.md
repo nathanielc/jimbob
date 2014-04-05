@@ -84,9 +84,6 @@ Finally we compile gcc for a final time:
 
     $ ct_sources/gcc2.build
 
-Breather
---------
-
 At this point we have compiled gcc for your host system and enabled gcc to cross compile for your target system. Now we are ready to start compiling packages for the actual OS.
 
 Configure cross compile env
@@ -102,4 +99,19 @@ Compile Busybox
 The first package we will compile for the target system is busybox:
 
     $ sources/busybox.build
+
+Compile iana-etc
+----------------
+Next we need iana-etc:
+
+    $ sources/iana-etc.build
+
+
+Compile linux
+-------------
+
+We are ready to compile linux itself:
+
+    $ sources/linux.build
+
 
