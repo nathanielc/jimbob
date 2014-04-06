@@ -1,0 +1,134 @@
+#!/bin/bash
+
+set -e
+JB_HOSTNAME=$1
+JB_GATEWAY=$2
+JB_NETMASK=$3
+JB_BROADCAST=$4
+JB_IPADDRESS=$5
+JB_DOMAIN=$6
+JB_NAMESERVER=$7
+
+echo "${JB_HOSTNAME}" > ${JB_ROOT_FS}/etc/HOSTNAME
+
+cat > ${JB_ROOT_FS}/etc/hosts << EOF
+# Begin /etc/hosts (no network card version)
+ 
+127.0.0.1 ${JB_HOSTNAME} localhost
+ 
+# End /etc/hosts (no network card version)
+EOF
+
+cat > ${JB_ROOT_FS}/etc/network.conf << EOF
+# /etc/network.conf
+# Global Networking Configuration
+# interface configuration is in /etc/network.d/
+ 
+# set to yes to enable networking
+NETWORKING=yes
+ 
+# set to yes to set default route to gateway
+USE_GATEWAY=yes
+ 
+# set to gateway IP address
+GATEWAY=${JB_GATEWAY}
+ 
+# Interfaces to add to br0 bridge
+# Leave commented to not setup a network bridge
+# Substitute br0 for eth0 in the interface.eth0 sample below to bring up br0
+# instead
+# bcm47xx with vlans:
+#BRIDGE_INTERFACES="eth0.0 eth0.1 wlan0"
+# Other access point with a wired eth0 and a wireless wlan0 interface:
+#BRIDGE_INTERFACES="eth0 wlan0"
+ 
+EOF
+
+
+
+if [ ! -d ${JB_ROOT_FS}/etc/network.d ]
+then
+	mkdir ${JB_ROOT_FS}/etc/network.d
+fi
+cat > ${JB_ROOT_FS}/etc/network.d/interface.eth0 << EOF
+# Network Interface Configuration
+ 
+# network device name
+INTERFACE=eth0
+ 
+# set to yes to use DHCP instead of the settings below
+DHCP=no
+ 
+# IP address
+IPADDRESS=${JB_IPADDRESS}
+ 
+# netmask
+NETMASK=${JB_NETMASK}
+ 
+# broadcast address
+BROADCAST=${JB_BROADCAST}
+EOF
+
+
+cat > ${JB_ROOT_FS}/etc/udhcpc.conf << "EOF"
+#!/bin/sh
+# udhcpc Interface Configuration
+# Based on http://lists.debian.org/debian-boot/2002/11/msg00500.html
+# udhcpc script edited by Tim Riker <Tim@Rikers.org>
+ 
+[ -z "$1" ] && echo "Error: should be called from udhcpc" && exit 1
+ 
+RESOLV_CONF="/etc/resolv.conf"
+RESOLV_BAK="/etc/resolv.bak"
+ 
+[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+[ -n "$subnet" ] && NETMASK="netmask $subnet"
+ 
+case "$1" in
+        deconfig)
+                if [ -f "$RESOLV_BAK" ]; then
+                        mv "$RESOLV_BAK" "$RESOLV_CONF"
+                fi
+                /sbin/ifconfig $interface 0.0.0.0
+                ;;
+ 
+        renew|bound)
+                /sbin/ifconfig $interface $ip $BROADCAST $NETMASK
+ 
+                if [ -n "$router" ] ; then
+                        while route del default gw 0.0.0.0 dev $interface ; do
+                                true
+                        done
+ 
+                        for i in $router ; do
+                                route add default gw $i dev $interface
+                        done
+                fi
+ 
+                if [ ! -f "$RESOLV_BAK" ] && [ -f "$RESOLV_CONF" ]; then
+                        mv "$RESOLV_CONF" "$RESOLV_BAK"
+                fi
+ 
+                echo -n > $RESOLV_CONF
+                [ -n "$domain" ] && echo search $domain >> $RESOLV_CONF
+                for i in $dns ; do
+                        echo nameserver $i >> $RESOLV_CONF
+                done
+                ;;
+esac
+ 
+exit 0
+EOF
+ 
+chmod +x ${JB_ROOT_FS}/etc/udhcpc.conf
+
+
+cat > ${JB_ROOT_FS}/etc/resolv.conf << EOF
+# Begin /etc/resolv.conf
+ 
+domain ${JB_DOMAIN}
+nameserver ${JB_NAMESERVER}
+ 
+# End /etc/resolv.conf
+EOF
+

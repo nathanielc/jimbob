@@ -11,11 +11,13 @@ umask 022
 
 # Export paths
 export JB_ROOT_FS=$DIR/rootfs
+export JB_MNT_FS=$DIR/mntfs
 export JB_CT_SRC=$DIR/ct_sources
 export JB_SRC=$DIR/sources
 export JB_FW=$DIR/firmware
 export JB_TOOLS=$DIR/tools
 export JB_CROSS_TOOLS=$DIR/cross-tools
+export JB_SNAPSHOTS=$DIR/snapshots
 export LC_ALL=POSIX
 export PATH=${JB_CROSS_TOOLS}/bin:/bin:/usr/bin
 

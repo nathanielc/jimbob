@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cp -v $JB_FW/broadcom/boot/{bootcode.bin,fixup.dat,fixup_cd.dat,start.elf,start_cd.elf} $JB_ROOT_FS/boot/

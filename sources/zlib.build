@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+version="1.2.8"
+
+cd $JB_SRC
+tar -xvf zlib-${version}.tar.gz && cd zlib-${version}
+sed -i 's/-O3/-Os/g' configure
+./configure --shared --prefix=/usr
+make -j $JB_N_JOBS
+make DESTDIR=${JB_ROOT_FS} install
+
+# Clean up build dir
+cd $JB_SRC && rm -rf zlib-${version}
+

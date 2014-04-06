@@ -115,3 +115,53 @@ We are ready to compile linux itself:
     $ sources/linux.build
 
 
+Finalize root fs
+----------------
+
+First copy over the firware into the boot directory:
+
+    $ firmware/broadcom.build
+
+Next copy over the bootscripts:
+
+    $ sources/clfs-embedded-bootscripts.build
+
+
+Now add several necessary config files:
+
+    $ sources/fs.build
+
+
+Setup on the network configuration specifing the desired hostname, gateway, netmask, broadcast, ip domain and namserver
+
+    $ sources/network.build <HOSTNAME> <GATEWAY> <NETMASK> <BROADCAST> <IPADDRESS> <DOMAIN> <NAMESERVER>
+
+
+Setup the fstab for booting
+
+   $ sources/fstab.build
+
+
+Create a snapshot of the root fs
+--------------------------------
+
+Lets create a snapshot of the root fs image so we can easily restore it later (optionally pass a name for the snapshot):
+
+    $ ./snapshot [name]
+
+Deploy the root fs
+------------------
+
+Finally we just need to copy the root fs to a SD card. To do so you will need to create two partitions on the SD card. The first partition needs to be a vfat filesystem and the second an ext5 file system. Run the deploy script which will mount the specified partitions and then copy over the root fs. Note: your user will need sudo permission to mount/umount and copy files.
+
+    $ ./deploy.sh <boot part> <root part>
+
+
+Umount and Boot
+---------------
+
+Unmount the SD card and boot your pi
+
+
+
+

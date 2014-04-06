@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+version="2014.63"
+
+cd $JB_SRC
+tar -xvf dropbear-${version}.tar.bz2 && cd dropbear-${version}
+CC="${CC} -Os" ./configure --prefix=/usr --host=${JB_TARGET}
+make MULTI=1 \
+  PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" -j $JB_N_JOBS
+make MULTI=1 \
+  PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" \
+  install DESTDIR=${JB_ROOT_FS}
+
+# Install start up sripts
+mkdir ${JB_ROOT_FS}/etc/dropbear
+cd $JB_SRC/clfs-embedded-bootscripts-*/
+make install-dropbear DESTDIR=${JB_ROOT_FS}
+
+# Clean up build dir
+cd $JB_SRC && rm -rf dropbear-${version}
+
