@@ -1,0 +1,141 @@
+#!/bin/bash
+
+set -e
+
+cd $JB_SRC/epoch
+./buildepoch.sh --cflags "-I $JB_CROSS_TOOLS/$JB_TARGET/usr/include/ -I $JB_CROSS_TOOLS/lib/gcc/arm-linux-musleabihf/4.7.3/include/ -DNO_EXECINFO"
+
+cp -vP built/sbin/* $JB_ROOT_FS/sbin
+cp -vP built/bin/* $JB_ROOT_FS/bin
+
+install -dv $JB_ROOT_FS/etc/epoch
+
+cat > $JB_ROOT_FS/etc/epoch/epoch.conf << EOF
+#Epoch Init System Configuration for Jimbob
+
+BootBannerText=Jimbob starting...
+BootBannerColor=CYAN
+
+Hostname=FILE /etc/hostname
+DefaultRunlevel=boot
+EnableLogging=true
+DisableCAD=true
+BlankLogOnBoot=true
+MountVirtual=procfs sysfs devpts+ devshm+
+
+#Begin object specs
+
+#ObjectID=mountruntmp
+#    ObjectDescription=Mounting /run and /tmp
+#    ObjectStartCommand=/etc/epoch/scripts/mountruntmp.sh
+#    ObjectStopCommand=NONE
+#    ObjectStartPriority=2
+#    ObjectStopPriority=0
+#    ObjectEnabled=true
+#    ObjectOptions=RAWDESCRIPTION
+#    ObjectRunlevels=boot core hurr
+
+ObjectID=rwfs
+    ObjectDescription=root filesystem read-write support
+    ObjectStartCommand=/bin/mount -o remount,rw /
+    ObjectStopCommand=/bin/mount -o remount,ro /
+    ObjectStartPriority=4
+    ObjectStopPriority=6
+    ObjectEnabled=true
+    ObjectRunlevels=boot core
+
+ObjectID=fstab
+    ObjectDescription=Mount everything in the fstab
+    ObjectStartCommand=/bin/mount -a
+    ObjectStartPriority=4
+    ObjectStopPriority=6
+    ObjectEnabled=true
+    ObjectRunlevels=boot core
+
+ObjectID=mdev
+    ObjectDescription=MDev device manager
+    ObjectStartCommand=/bin/echo "/sbin/mdev" > /proc/sys/kernel/hotplug && /sbin/mdev -s
+    ObjectStopCommand=NONE
+    ObjectStartPriority=3
+    ObjectStopPriority=0
+    ObjectEnabled=true
+    ObjectRunlevels=boot durr
+
+
+ObjectID=network
+    ObjectDescription=Networking
+    ObjectStartCommand=/etc/rc.d/start/S10network start
+    ObjectStopCommand=/etc/rc.d/start/S10network stop
+    ObjectStartPriority=6
+    ObjectEnabled=true
+    ObjectRunlevels=boot core
+    ObjectOptions=SERVICE
+
+ObjectID=ntpd
+    ObjectDescription=NTPD service
+    ObjectStartCommand=/usr/sbin/ntpd -n -q -p pool.ntp.org && /usr/sbin/ntpd -p 0.pool.ntp.org -p 1.pool.ntp.org -p 2.pool.ntp.org
+    ObjectStopCommand=PIDFILE /var/run/ntpd.pid
+    ObjectStartPriority=7
+    ObjectStopPriority=1
+    ObjectEnabled=true
+    ObjectOptions=SERVICE AUTORESTART
+    ObjectRunlevels=boot durr
+
+ObjectID=sshd
+    ObjectDescription=Dropbear SSHD
+    ObjectStartCommand=/usr/sbin/dropbear -R
+    ObjectStopCommand=PIDFILE /var/run/dropbear.pid
+    ObjectStartPriority=8
+    ObjectStopPriority=1
+    ObjectEnabled=true
+    ObjectRunlevels=boot
+    ObjectOptions=SERVICE AUTORESTART
+
+ObjectID=getty1
+    ObjectDescription=Getty on /dev/tty1
+    ObjectStartCommand=/sbin/getty 38400 tty1 &
+    ObjectStopCommand=NONE
+    ObjectStartPriority=18
+    ObjectStopPriority=0
+    ObjectEnabled=true
+    ObjectOptions=SERVICE AUTORESTART
+    ObjectRunlevels=boot durr core
+
+ObjectID=getty2
+    ObjectDescription=Getty on /dev/tty2
+    ObjectStartCommand=/sbin/getty 38400 tty2 &
+    ObjectStopCommand=NONE
+    ObjectStartPriority=19
+    ObjectStopPriority=0
+    ObjectEnabled=true
+    ObjectOptions=SERVICE AUTORESTART
+    ObjectRunlevels=boot durr core
+
+ObjectID=getty3
+    ObjectDescription=Getty on /dev/tty3
+    ObjectStartCommand=/sbin/getty 38400 tty3 &
+    ObjectStopCommand=NONE
+    ObjectStartPriority=19
+    ObjectStopPriority=0
+    ObjectEnabled=true
+    ObjectOptions=SERVICE AUTORESTART
+    ObjectRunlevels=boot durr core
+
+ObjectID=killall5_soft
+    ObjectDescription=Terminating all processes
+    ObjectStopCommand=killall5 -15 && sleep 2
+    ObjectStartPriority=0
+    ObjectStopPriority=3
+    ObjectEnabled=true
+    ObjectOptions=HALTONLY RAWDESCRIPTION
+
+ObjectID=killall5
+    ObjectDescription=Killing all processes
+    ObjectStopCommand=killall5 -9 && sleep 2
+    ObjectStartPriority=0
+    ObjectStopPriority=4
+    ObjectEnabled=true
+    ObjectOptions=HALTONLY RAWDESCRIPTION
+
+EOF
+

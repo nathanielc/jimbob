@@ -1,24 +1,13 @@
 #!/bin/bash
 
-set -e 
+set -e
 
 cat > ${JB_ROOT_FS}/etc/fstab << "EOF"
-# Begin /etc/fstab
- 
-# file system  mount-point  type   options          dump  fsck
-#                                                         order
- 
-/dev/mmcblk0p1 /boot        vfat   defaults         1     2
-/dev/mmcblk0p2 /            ext4   defaults         0     1
-/dev/mmcblk0p3 none         swap   sw               0     0
-proc           /proc        proc   defaults         0     0
-sysfs          /sys         sysfs  defaults         0     0
-devpts         /dev/pts     devpts gid=4,mode=620   0     0
-shm            /dev/shm     tmpfs  defaults         0     0
-# End /etc/fstab
+/dev/mmcblk0p1 /boot        vfat     defaults           1     2
+/dev/mmcblk0p2 /            ext4     defaults           0     1
 EOF
 
 cat > ${JB_ROOT_FS}/boot/cmdline.txt << "EOF"
-root=/dev/mmcblk0p2 rootdelay=2
+root=/dev/mmcblk0p2 rootdelay=2 init=/sbin/init
 EOF
 

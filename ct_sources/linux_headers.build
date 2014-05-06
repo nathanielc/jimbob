@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Install the linux headers on the rootfs
+
+cd $JB_SRC/linux
+make mrproper
+make ARCH=${JB_ARCH} headers_check
+make ARCH=${JB_ARCH} INSTALL_HDR_PATH=${JB_CT_SYSROOT} headers_install

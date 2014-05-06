@@ -46,39 +46,34 @@ You will also notice a cross_env.sh script which will later be used to setup an 
 Note: If you are impatient like me you can pass a number to build_env.sh and it will setup the env to tell make to run that number of jobs simultaneously.
 
 
-Setup basic file hierarchy
---------------------------
-
-Now we need to setup the skeleton file structure in our rootfs:
-
-    $ ./create_fhs.sh
-
 
 Install linux headers
 ---------------------
 
-Next we need to install the linux headers into our rootfs:
+First we need a place to put our cross-tools headers:
 
-    $ sources/linux_headers.build
+    $ ./setup_ct.sh #Note this script removes the cross-tools directory and recreates it
+
+
+Next we need to install the linux headers into our cross-tools dir:
+
+    $ ct_sources/linux_headers.build
 
 
 Compile gcc for cross compiling
 -------------------------------
 
-Now we need to compile various dependencies for gcc:
+Now we need to compile binutils a dependency for gcc:
 
-    $ ct_sources/gmp.build
-    $ ct_sources/mpfr.build
-    $ ct_sources/mpc.build
     $ ct_sources/binutils.build
 
-Next we need to compile gcc (first iteration)
+Next we need to compile gcc (with libc)
 
     $ ct_sources/gcc1.build
 
-Then we compile uClibc (this will ask a question about EABI or OABI just choose the default EABI):
+Then we compile musl (small libc):
 
-    $ ct_sources/uClibc.build
+    $ ct_sources/musl.build
 
 Finally we compile gcc for a final time:
 
@@ -91,7 +86,14 @@ Configure cross compile env
 
 First before we can compile linux we need to setup our env to use gcc and friends that we just compiled.
 
-    $ source cross_env.sh 
+    $ source cross_env.sh
+
+Setup basic file hierarchy
+--------------------------
+
+Now we need to setup the skeleton file structure in our rootfs:
+
+    $ ./create_fhs.sh
 
 Compile Busybox
 ---------------
@@ -157,10 +159,10 @@ Finally we just need to copy the root fs to a SD card. To do so you will need to
     $ ./deploy.sh <boot part> <root part>
 
 
-Umount and Boot
+Boot
 ---------------
 
-Unmount the SD card and boot your pi
+Remove the SD card and boot your pi
 
 
 

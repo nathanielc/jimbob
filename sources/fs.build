@@ -1,6 +1,39 @@
 #!/bin/bash
 
-set -e 
+set -e
+
+# Link /etc/mtab to /proc/mounts
+ln -svf ../proc/mounts ${JB_ROOT_FS}/etc/mtab
+
+
+cat > ${JB_ROOT_FS}/etc/passwd << "EOF"
+root:ecPwfGTzb0ab.:0:0:root:/root:/bin/ash
+EOF
+
+cat > ${JB_ROOT_FS}/etc/group << "EOF"
+root:x:0:
+bin:x:1:
+sys:x:2:
+kmem:x:3:
+tty:x:4:
+tape:x:5:
+daemon:x:6:
+floppy:x:7:
+disk:x:8:
+lp:x:9:
+dialout:x:10:
+audio:x:11:
+video:x:12:
+utmp:x:13:
+usb:x:14:
+cdrom:x:15:
+EOF
+
+
+# Set permissions on run/log dirs
+touch ${JB_ROOT_FS}/var/run/utmp ${JB_ROOT_FS}/var/log/{btmp,lastlog,wtmp}
+chmod -v 664 ${JB_ROOT_FS}/var/run/utmp ${JB_ROOT_FS}/var/log/lastlog
+
 cat > ${JB_ROOT_FS}/etc/mdev.conf<< "EOF"
 # /etc/mdev/conf
  
@@ -132,36 +165,6 @@ export EDITOR='/bin/vi'
 # End /etc/profile
 EOF
 
-ln -svf ../proc/mounts ${JB_ROOT_FS}/etc/mtab
-
-
-cat > ${JB_ROOT_FS}/etc/passwd << "EOF"
-root::0:0:root:/root:/bin/ash
-EOF
-
-cat > ${JB_ROOT_FS}/etc/group << "EOF"
-root:x:0:
-bin:x:1:
-sys:x:2:
-kmem:x:3:
-tty:x:4:
-tape:x:5:
-daemon:x:6:
-floppy:x:7:
-disk:x:8:
-lp:x:9:
-dialout:x:10:
-audio:x:11:
-video:x:12:
-utmp:x:13:
-usb:x:14:
-cdrom:x:15:
-EOF
-
-
-
-touch ${JB_ROOT_FS}/var/run/utmp ${CLFS}/var/log/{btmp,lastlog,wtmp}
-chmod -v 664 ${JB_ROOT_FS}/var/run/utmp ${CLFS}/var/log/lastlog
 
 cat > ${JB_ROOT_FS}/etc/inittab<< "EOF"
 # /etc/inittab

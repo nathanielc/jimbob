@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+cat > $JB_ROOT_FS/root/.profile << EOF
+# .profile
+
+export PS1="[\u@\h \w]#"
+alias ll='ls -l'
+EOF
+

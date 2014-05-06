@@ -13,9 +13,14 @@ make MULTI=1 \
   install DESTDIR=${JB_ROOT_FS}
 
 # Install start up sripts
-mkdir ${JB_ROOT_FS}/etc/dropbear
+mkdir -p ${JB_ROOT_FS}/etc/dropbear
 cd $JB_SRC/clfs-embedded-bootscripts-*/
 make install-dropbear DESTDIR=${JB_ROOT_FS}
+
+#Add shells
+
+echo "/bin/ash" >> ${JB_ROOT_FS}/etc/shells
+echo "/bin/bash" >> ${JB_ROOT_FS}/etc/shells
 
 # Clean up build dir
 cd $JB_SRC && rm -rf dropbear-${version}

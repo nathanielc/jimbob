@@ -26,15 +26,17 @@ unset CFLAGS
 unset CXXFLAGS
 
 # Export arch info
-export JB_ABI="aapcs-linux"
 export JB_HOST=$(echo ${MACHTYPE} | sed "s/-[^-]*/-cross/")
-export JB_TARGET="arm-unknown-linux-uclibcgnueabi"
+export JB_TARGET="arm-linux-musleabihf"
 export JB_ARCH="arm"
 export JB_ENDIAN="little"
 export JB_ARM_ARCH="armv6zk"
-export JB_ARM_MODE="arm"
 export JB_FLOAT="hard"
 export JB_FPU="vfp"
+
+
+# Define cross-tools sysroot
+export JB_CT_SYSROOT=$JB_CROSS_TOOLS/$JB_TARGET
 
 # Number of jobs make can run in parallel
 if [ $1 ]

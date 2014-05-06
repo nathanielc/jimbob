@@ -1,22 +1,60 @@
 #!/bin/bash
 
 set -e
-version="4.6.4"
+version="4.7.3"
+mpfr_version="3.1.2"
+gmp_version="5.1.2"
+mpc_version="1.0.1"
 
 cd $JB_CT_SRC
-tar -jxvf gcc-${version}.tar.bz2 && mkdir -v gcc-build && cd gcc-build
-AR=ar LDFLAGS="-Wl,-rpath,${JB_CROSS_TOOLS}/lib" \
-  ../gcc-${version}/configure --prefix=${JB_CROSS_TOOLS} \
-  --build=${JB_HOST} --host=${JB_HOST} --target=${JB_TARGET} \
-  --with-sysroot=${JB_ROOT_FS} --disable-nls  --disable-shared \
-  --with-mpfr=${JB_CROSS_TOOLS} --with-gmp=${JB_CROSS_TOOLS} \
-  --with-mpc=${JB_CROSS_TOOLS} --without-headers --with-newlib \
-  --disable-decimal-float --disable-libgomp --disable-libmudflap \
-  --disable-libssp --disable-threads --enable-languages=c,c++ \
-  --disable-multilib --with-abi=${JB_ABI} --with-arch=${JB_ARM_ARCH} \
-  --with-mode=${JB_ARM_MODE} --with-float=${JB_FLOAT} \
-  --with-fpu=${JB_FPU}
+tar -jxvf gcc-${version}.tar.bz2
+cd gcc-${version}
+patch -Np1 -i ${JB_CT_SRC}/gcc-4.7.3-musl-1.patch
+
+
+#Extract deps
+tar xf ../mpfr-${mpfr_version}.tar.bz2
+mv -v mpfr-${mpfr_version} mpfr
+
+tar xf ../gmp-${gmp_version}.tar.bz2
+mv -v gmp-${gmp_version} gmp
+
+tar xf ../mpc-${mpc_version}.tar.gz
+mv -v mpc-${mpc_version} mpc
+
+
+
+# Create build dir
+cd $JB_CT_SRC
+mkdir -v gcc-build
+cd gcc-build
+
+# Build
+../gcc-${version}/configure \
+    --prefix=${JB_CROSS_TOOLS} \
+    --build=${JB_HOST} \
+    --host=${JB_HOST} \
+    --target=${JB_TARGET} \
+    --with-sysroot=${JB_CT_SYSROOT} \
+    --disable-nls \
+    --disable-shared \
+    --without-headers \
+    --with-newlib \
+    --disable-decimal-float \
+    --disable-libgomp \
+    --disable-libmudflap \
+    --disable-libssp \
+    --disable-libatomic \
+    --disable-libquadmath \
+    --disable-threads \
+    --enable-languages=c \
+    --disable-multilib \
+    --with-mpfr-include=${JB_CT_SRC}/gcc-${version}/mpfr/src \
+    --with-mpfr-lib=$(pwd)/mpfr/src/.libs \
+    --with-arch=${JB_ARM_ARCH} \
+    --with-float=${JB_FLOAT} \
+    --with-fpu=${JB_FPU}
 make all-gcc all-target-libgcc -j $JB_N_JOBS
 make install-gcc install-target-libgcc
+
 cd $JB_CT_SRC && rm -rf gcc-${version} && rm -rf gcc-build
- 

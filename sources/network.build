@@ -9,7 +9,7 @@ JB_IPADDRESS=$5
 JB_DOMAIN=$6
 JB_NAMESERVER=$7
 
-echo "${JB_HOSTNAME}" > ${JB_ROOT_FS}/etc/HOSTNAME
+echo "${JB_HOSTNAME}" > ${JB_ROOT_FS}/etc/hostname
 
 cat > ${JB_ROOT_FS}/etc/hosts << EOF
 # Begin /etc/hosts (no network card version)

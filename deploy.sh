@@ -23,7 +23,7 @@ fi
 
 if [ ! -d $JB_MNT_FS/boot ]
 then
-	mkdir $JB_MNT_FS/boot
+	sudo mkdir $JB_MNT_FS/boot
 fi
 
 sudo -E mount $JB_BOOT_PART -t vfat $JB_MNT_FS/boot
@@ -33,7 +33,11 @@ then
 	exit 2
 fi
 
-sudo -E cp -rv $JB_ROOT_FS/* $JB_MNT_FS/
+sudo -E cp -r $JB_ROOT_FS/* $JB_MNT_FS/
+#Manage permissions
+sudo chown -R root:root ${JB_MNT_FS}/
+sudo chgrp -v 13 ${JB_MNT_FS}/var/run/utmp ${JB_MNT_FS}/var/log/lastlog
+
 sync
 
 sudo umount $JB_MNT_FS/boot

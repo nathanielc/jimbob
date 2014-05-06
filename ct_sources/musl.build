@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+version="0.9.14"
+
+cd $JB_CT_SRC
+tar -zxvf musl-${version}.tar.gz && cd musl-${version}
+CC=${JB_TARGET}-gcc ./configure \
+    --prefix=/ \
+    --target=${JB_TARGET}
+CC=${JB_TARGET}-gcc make -j $JB_N_JOBS
+DESTDIR=${JB_CT_SYSROOT} make install
+
+# Clean up build dir
+cd $JB_CT_SRC && rm -rf musl-${version}

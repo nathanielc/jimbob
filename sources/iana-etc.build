@@ -5,11 +5,10 @@ version="2.30"
 
 cd $JB_SRC
 tar -xvf iana-etc-${version}.tar.bz2 && cd iana-etc-${version}
-patch -Np1 -i $JB_SRC/iana-etc-${version}-update-1.patch
+patch -Np1 -i $JB_SRC/iana-etc-${version}-update-2.patch
 make get
-make
+make STRIP=yes
 make DESTDIR=${JB_ROOT_FS} install
-chmod 755 ${JB_CROSS_TOOLS}/bin/depmod.pl
 
 # Clean up build dir
 cd $JB_SRC && rm -rf iana-etc-${version}

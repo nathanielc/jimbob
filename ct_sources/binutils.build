@@ -1,17 +1,27 @@
 #!/bin/bash
 
 set -e
-version="2.21.1"
-release="a"
+version="2.23.2"
 
 cd $JB_CT_SRC
-tar -jxvf binutils-${version}${release}.tar.bz2 && mkdir -v binutils-build && cd binutils-build
-../binutils-${version}/configure --prefix=${JB_CROSS_TOOLS} \
-   --target=${JB_TARGET} --with-sysroot=${JB_ROOT_FS} --disable-nls \
-   --enable-shared --disable-multilib
+tar -jxvf binutils-${version}.tar.bz2
+cd binutils-${version}
+patch -Np1 -i ${JB_CT_SRC}/binutils-${version}-musl-1.patch
+
+cd $JB_CT_SRC
+mkdir -v binutils-build
+cd binutils-build
+$JB_CT_SRC/binutils-${version}/configure \
+   --prefix=${JB_CROSS_TOOLS} \
+   --target=${JB_TARGET} \
+   --with-sysroot=${JB_CT_SYSROOT} \
+   --disable-nls \
+   --disable-multilib
+
 make configure-host
-make
+make -j $JB_N_JOBS
 make install
-cp -v ../binutils-${version}/include/libiberty.h ${JB_ROOT_FS}/usr/include
+
+# Clean up source
 cd $JB_CT_SRC && rm -rf binutils-${version} && rm -rf binutils-build
 

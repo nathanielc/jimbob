@@ -1,16 +1,16 @@
 #!/bin/bash
 
 set -e
-version="2.30"
+
 # Set cross-compiler target (notice the '-' in the end)
 JB_CROSS_COMPILE=${JB_CROSS_TOOLS}/bin/${JB_TARGET}-
 
 cd $JB_SRC/linux
 make mrproper
-ARCH=arm make bcmrpi_cutdown_defconfig
-ARCH=arm CROSS_COMPILE=${JB_CROSS_COMPILE} make oldconfig
-ARCH=arm CROSS_COMPILE=${JB_CROSS_COMPILE} make -j $JB_N_JOBS
-ARCH=arm CROSS_COMPILE=${JB_CROSS_COMPILE} make modules_install INSTALL_MOD_PATH=${JB_ROOT_FS}/boot
+ARCH="${JB_ARCH}" make bcmrpi_cutdown_defconfig
+ARCH="${JB_ARCH}" CROSS_COMPILE=${JB_CROSS_COMPILE} make oldconfig
+ARCH="${JB_ARCH}" CROSS_COMPILE=${JB_CROSS_COMPILE} make
+ARCH="${JB_ARCH}" CROSS_COMPILE=${JB_CROSS_COMPILE} make modules_install INSTALL_MOD_PATH=${JB_ROOT_FS}/boot
 cd $JB_SRC
 
 # Do some magic with the Raspberry Pi kernel image creator

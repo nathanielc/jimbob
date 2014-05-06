@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+#Copy cross tools libs so the system can function
+
+cp -vP ${JB_CT_SYSROOT}/lib/*.so* ${JB_ROOT_FS}/lib/
+
+#Stip the libs
+${JB_TARGET}-strip ${JB_ROOT_FS}/lib/*
+

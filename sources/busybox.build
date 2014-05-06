@@ -1,18 +1,23 @@
 #!/bin/bash
 
 set -e
-version="1.22.1"
+version="1.21.1"
 
 cd $JB_SRC
 tar -xvf busybox-${version}.tar.bz2 && cd busybox-${version}
-patch -Np1 -i $JB_SRC/busybox-${version}-ash.patch
-patch -Np1 -i $JB_SRC/busybox-${version}-date.patch
-patch -Np1 -i $JB_SRC/busybox-${version}-iplink.patch
-patch -Np1 -i $JB_SRC/busybox-${version}-nc.patch
-cp -v $JB_SRC/busybox-${version}-config .config
-make oldconfig
-make CROSS_COMPILE="${JB_TARGET}-" -j $JB_N_JOBS
-make CROSS_COMPILE="${JB_TARGET}-" CONFIG_PREFIX="${JB_ROOT_FS}" install
+make distclean
+patch -Np1 -i $JB_SRC/busybox-${version}-musl-1.patch
+ARCH="${JB_ARCH}" make defconfig
+
+#Disable building both ifplugd and inetd as they both have issues building against musl-libc:
+sed -i 's/\(CONFIG_\)\(.*\)\(INETD\)\(.*\)=y/# \1\2\3\4 is not set/g' .config
+sed -i 's/\(CONFIG_IFPLUGD\)=y/# \1 is not set/' .config
+
+
+make ARCH="${JB_ARCH}" CROSS_COMPILE="${JB_TARGET}-"
+make ARCH="${JB_ARCH}" CROSS_COMPILE="${JB_TARGET}-" CONFIG_PREFIX="${JB_ROOT_FS}" install
+
+#If you're going to build your kernel with modules, you will need to make sure depmod.pl is available:
 cp examples/depmod.pl ${JB_CROSS_TOOLS}/bin
 chmod 755 ${JB_CROSS_TOOLS}/bin/depmod.pl
 
