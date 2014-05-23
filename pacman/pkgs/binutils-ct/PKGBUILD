@@ -4,7 +4,6 @@ pkgname=binutils-ct
 _pkgname=binutils
 pkgver=2.23.2
 pkgrel=1
-options=(!makeflags)
 pkgdesc="The binary utilities needed to manipulate programs. Cross Compiled for ARM EABI"
 arch=(arm)
 url="http://www.gnu.org/software/binutils/"
@@ -44,5 +43,5 @@ check() {
 package() {
     _buildir="$srcdir/$_pkgname-build"
     cd $_buildir
-    make DESTDIR="$pkgdir/" install
+    make DESTDIR="$pkgdir/" -j1 install
 }

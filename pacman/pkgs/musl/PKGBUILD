@@ -1,0 +1,41 @@
+
+# Maintainer: Nathaniel Cook <nvcook42@gmail.com>
+pkgname=('musl' 'musl-devel')
+pkgbase=musl
+pkgver=0.9.14
+pkgrel=1
+pkgdesc="Lightweight C/POSIX library and extensions for ARM EABI"
+arch=(arm)
+url="http://www.musl-libc.org/"
+license=('MIT')
+makedepends=('gcc-newlib-ct')
+source=("http://www.musl-libc.org/releases/$pkgbase-$pkgver.tar.gz")
+md5sums=('bfb685695aa942e64c63170589e575b2')
+
+
+prepare() {
+    cd "$srcdir/$pkgbase-$pkgver"
+}
+
+build() {
+    cd "$srcdir/$pkgbase-$pkgver"
+    CC=$_target-gcc ./configure \
+        --prefix=/usr \
+        --target=$_target
+    CC=$_target-gcc make
+}
+
+check() {
+    cd "$srcdir/$pkgbase-$pkgver"
+    #make -k check
+}
+
+package_musl() {
+    cd "$srcdir/$pkgbase-$pkgver"
+    make DESTDIR="$pkgdir/" install-libs
+}
+
+package_musl-devel() {
+    cd "$srcdir/$pkgbase-$pkgver"
+    make DESTDIR="$pkgdir/" install-headers
+}

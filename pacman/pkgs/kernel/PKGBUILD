@@ -2,14 +2,15 @@
 # Maintainer: Nathaniel Cook <nvcook42@gmail.com>
 pkgname=('kernel-headers')
 pkgbase=kernel
-pkgver=3.13
+pkgver=3.12
 pkgrel=1
+#options=(!makeflags)
 pkgdesc="RaspberryPi fork of the Linux Kernel"
 arch=(arm)
 url="https://github.com/raspberrypi/linux/"
 license=('GPL')
 source=("https://github.com/raspberrypi/linux/archive/rpi-$pkgver.y.tar.gz")
-md5sums=('44c10f7545350f36793fec4728e096d1')
+md5sums=('c572e3674e988641c6629a0cec8f697e')
 _tarname=linux-rpi-$pkgver.y
 
 prepare() {
@@ -28,5 +29,5 @@ check() {
 
 package_kernel-headers() {
     cd "$srcdir/$_tarname"
-    make ARCH=$arch INSTALL_HDR_PATH="$pkgdir/usr" headers_install
+    make ARCH=$arch INSTALL_HDR_PATH="$pkgdir/usr" -j1 headers_install
 }
