@@ -1,0 +1,44 @@
+
+# Maintainer: Nathaniel Cook <nvcook42@gmail.com>
+pkgname=busybox
+pkgver=1.21.1
+pkgrel=1
+pkgdesc="BusyBox: The Swiss Army Knife of Embedded Linux"
+arch=(arm)
+url="http://www.busybox.net/"
+license=('GPL')
+depends=('musl')
+makedepends=('musl-devel')
+options=(!makeflags)
+source=("http://busybox.net/downloads/$pkgname-$pkgver.tar.bz2"
+        "$pkgname-$pkgver-musl-1.patch")
+md5sums=('795394f83903b5eec6567d51eebb417e'
+         '335622b0f2bf4e18e9d93fd48afe53da')
+
+PATH=$_ct_path:$PATH
+
+prepare() {
+    cd "$srcdir/$pkgname-$pkgver"
+    make distclean
+    patch -p1 -i "$srcdir/$pkgname-$pkgver-musl-1.patch"
+    ARCH=$arch make defconfig
+
+    #Disable building both ifplugd and inetd as they both have issues building against musl-libc:
+    sed -i 's/\(CONFIG_\)\(.*\)\(INETD\)\(.*\)=y/# \1\2\3\4 is not set/g' .config
+    sed -i 's/\(CONFIG_IFPLUGD\)=y/# \1 is not set/' .config
+}
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    make ARCH=$arch CROSS_COMPILE="$_target-"
+}
+
+check() {
+    cd "$srcdir/$pkgname-$pkgver"
+    #make -k check
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    make DESTDIR="$pkgdir/" ARCH=$arch CROSS_COMPILE="$_target-" install
+}

@@ -19,6 +19,7 @@ prepare() {
 
 build() {
     cd "$srcdir/$pkgbase-$pkgver"
+    PATH=$_ct_path:$PATH
     CC=$_target-gcc ./configure \
         --prefix=/usr \
         --target=$_target
@@ -32,10 +33,10 @@ check() {
 
 package_musl() {
     cd "$srcdir/$pkgbase-$pkgver"
-    make DESTDIR="$pkgdir/" install-libs
+    make DESTDIR="$pkgdir/" -j1 install-libs
 }
 
 package_musl-devel() {
     cd "$srcdir/$pkgbase-$pkgver"
-    make DESTDIR="$pkgdir/" install-headers
+    make DESTDIR="$pkgdir/" -j1 install-headers
 }
