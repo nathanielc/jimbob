@@ -1,0 +1,48 @@
+
+# Maintainer: Nathaniel Cook <nvcook42@gmail.com>
+pkgname=binutils-ct
+_pkgname=binutils
+pkgver=2.23.2
+pkgrel=1
+epoch=
+pkgdesc="The binary utilities needed to manipulate programs. Cross Compiled for ARM EABI"
+arch=(arm)
+url="http://www.gnu.org/software/binutils/"
+license=('GPL')
+source=("http://ftp.gnu.org/gnu/$_pkgname/$_pkgname-$pkgver.tar.bz2"
+        "$_pkgname-$pkgver-musl-1.patch")
+md5sums=('4f8fa651e35ef262edc01d60fb45702e'
+         'dde64feb7f4cf821cbd887b53026fd67')
+
+
+prepare() {
+    cd "$srcdir/$_pkgname-$pkgver"
+    patch -p1 -i "$srcdir/$_pkgname-$pkgver-musl-1.patch"
+}
+
+build() {
+    _buildir="$srcdir/$_pkgname-build"
+    rm -rf $_buildir
+    mkdir $_buildir
+    cd $_buildir
+    "$srcdir/$_pkgname-$pkgver"/configure \
+        --prefix=$_ct_prefix \
+        --target=$_target \
+        --with-sysroot=$_ct_sysroot \
+        --disable-nls \
+        --disable-multilib
+
+    make configure-host
+    make
+}
+
+check() {
+    cd "$srcdir/$_pkgname-$pkgver"
+    #make -k check
+}
+
+package() {
+    _buildir="$srcdir/$_pkgname-build"
+    cd $_buildir
+    make DESTDIR="$pkgdir/" install
+}

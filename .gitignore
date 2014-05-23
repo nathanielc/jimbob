@@ -36,3 +36,10 @@ rootfs
 cross-tools
 sources/clfs-embedded-bootscripts-*/
 snapshots
+pacman/root
+pacman/repo
+
+#SRC and PKGS
+pacman/pkgs/*/*.tar.*
+pacman/pkgs/*/src
+pacman/pkgs/*/pkg/
