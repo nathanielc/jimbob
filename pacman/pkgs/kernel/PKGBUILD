@@ -1,0 +1,32 @@
+
+# Maintainer: Nathaniel Cook <nvcook42@gmail.com>
+pkgname=('kernel-headers')
+pkgbase=kernel
+pkgver=3.13
+pkgrel=1
+pkgdesc="RaspberryPi fork of the Linux Kernel"
+arch=(arm)
+url="https://github.com/raspberrypi/linux/"
+license=('GPL')
+source=("https://github.com/raspberrypi/linux/archive/rpi-$pkgver.y.tar.gz")
+md5sums=('44c10f7545350f36793fec4728e096d1')
+_tarname=linux-rpi-$pkgver.y
+
+prepare() {
+    cd "$srcdir/$_tarname"
+}
+
+build() {
+    cd "$srcdir/$_tarname"
+    make mrproper
+}
+
+check() {
+    cd "$srcdir/$_tarname"
+    make ARCH=$arch headers_check
+}
+
+package_kernel-headers() {
+    cd "$srcdir/$_tarname"
+    make ARCH=$arch INSTALL_HDR_PATH="$pkgdir/usr" headers_install
+}
