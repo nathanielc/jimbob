@@ -1,0 +1,12 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+rm -rf $DIR/repo/*
+cd $DIR/repo
+
+for i in `ls ../pkgs/*/*.pkg*`
+do
+    ln -sf $i ./
+done
+repo-add jimbob.db.tar.gz *.pkg*

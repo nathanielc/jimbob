@@ -1,0 +1,20 @@
+#!/bin/bash
+
+pkgs=('binutils-ct' 'kernel-headers' 'gcc-newlib-ct' 'musl' 'gcc-ct' 'busybox')
+
+for pkg in "${pkgs[@]}"
+do
+    echo $pkg
+    ls pkgs/$pkg/$pkg*pkg.tar*
+    if [ -f pkgs/$pkg/$pkg*pkg.tar* ]
+    then
+        echo "Package $pkg already built skipping..."
+    else
+        cd pkgs/$pkg/
+        ../../makepkg-jb
+        cd ../../
+    fi
+    ./update_repo
+    sudo ./pacman-jb -Sy
+    sudo ./pacman-jb -S $pkg
+done

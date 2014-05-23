@@ -1,0 +1,6 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+export PACMAN=$DIR/pacman-jb
+makepkg --config $DIR/makepkg-jb.conf "$@"

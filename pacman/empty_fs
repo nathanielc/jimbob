@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+mkdir -p $DIR/root/var/lib/pacman/{sync,local}
+mkdir -p $DIR/root/var/log
+mkdir -p $DIR/root/var/cache/pacman/pkg
+mkdir -p $DIR/root/etc/pacman.d/gnupg
