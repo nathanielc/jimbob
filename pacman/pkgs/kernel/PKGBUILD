@@ -2,7 +2,7 @@
 # Maintainer: Nathaniel Cook <nvcook42@gmail.com>
 pkgname=('kernel-headers')
 pkgbase=kernel
-pkgver=3.12
+pkgver=3.13
 pkgrel=1
 #options=(!makeflags)
 pkgdesc="RaspberryPi fork of the Linux Kernel"
@@ -10,7 +10,7 @@ arch=(arm)
 url="https://github.com/raspberrypi/linux/"
 license=('GPL')
 source=("https://github.com/raspberrypi/linux/archive/rpi-$pkgver.y.tar.gz")
-md5sums=('c572e3674e988641c6629a0cec8f697e')
+md5sums=('44c10f7545350f36793fec4728e096d1')
 _tarname=linux-rpi-$pkgver.y
 
 prepare() {

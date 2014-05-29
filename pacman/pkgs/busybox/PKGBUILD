@@ -11,17 +11,22 @@ depends=('musl')
 makedepends=('musl-devel')
 options=(!makeflags)
 source=("http://busybox.net/downloads/$pkgname-$pkgver.tar.bz2"
-        "$pkgname-$pkgver-musl-1.patch")
+        "$pkgname-$pkgver-musl-1.patch"
+        "jb.config")
 md5sums=('795394f83903b5eec6567d51eebb417e'
-         '335622b0f2bf4e18e9d93fd48afe53da')
+         '335622b0f2bf4e18e9d93fd48afe53da'
+         '0ed25c18a203233713c72123eec04dda')
 
-PATH=$_ct_path:$PATH
+_cross_compile="$_target-"
+PATH=$_ct_gcc_path:$PATH
+
 
 prepare() {
     cd "$srcdir/$pkgname-$pkgver"
     make distclean
     patch -p1 -i "$srcdir/$pkgname-$pkgver-musl-1.patch"
-    ARCH=$arch make defconfig
+    cp $srcdir/jb.config .config
+    make CROSS_COMPILE=$_cross_compile oldconfig
 
     #Disable building both ifplugd and inetd as they both have issues building against musl-libc:
     sed -i 's/\(CONFIG_\)\(.*\)\(INETD\)\(.*\)=y/# \1\2\3\4 is not set/g' .config
@@ -30,7 +35,7 @@ prepare() {
 
 build() {
     cd "$srcdir/$pkgname-$pkgver"
-    make ARCH=$arch CROSS_COMPILE="$_target-"
+    make CROSS_COMPILE=$_cross_compile
 }
 
 check() {
@@ -40,5 +45,5 @@ check() {
 
 package() {
     cd "$srcdir/$pkgname-$pkgver"
-    make DESTDIR="$pkgdir/" ARCH=$arch CROSS_COMPILE="$_target-" install
+    make CONFIG_PREFIX="$pkgdir/" CROSS_COMPILE=$_cross_compile install
 }
