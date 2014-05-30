@@ -1,0 +1,15 @@
+#!/bin/bash
+
+pkg=$1
+
+shift
+
+for src in "$@"
+do
+    echo $src
+
+    curl "https://projects.archlinux.org/svntogit/packages.git/plain/trunk/$src?h=packages/$pkg" > $src
+
+done
+
+
