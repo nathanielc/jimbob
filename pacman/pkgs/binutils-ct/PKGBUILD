@@ -2,21 +2,21 @@
 # Maintainer: Nathaniel Cook <nvcook42@gmail.com>
 pkgname=binutils-ct
 _pkgname=binutils
-pkgver=2.23.2
+pkgver=2.24
 pkgrel=1
 pkgdesc="The binary utilities needed to manipulate programs. Cross Compiled for ARM EABI"
 arch=(arm)
 url="http://www.gnu.org/software/binutils/"
 license=('GPL')
 source=("http://ftp.gnu.org/gnu/$_pkgname/$_pkgname-$pkgver.tar.bz2"
-        "$_pkgname-$pkgver-musl-1.patch")
-md5sums=('4f8fa651e35ef262edc01d60fb45702e'
-         'dde64feb7f4cf821cbd887b53026fd67')
+        "$_pkgname-$pkgver.patch")
 
+md5sums=('e0f71a7b2ddab0f8612336ac81d9636b'
+         '2d8db50a892a794c80af0619f2e0526c')
 
 prepare() {
     cd "$srcdir/$_pkgname-$pkgver"
-    patch -p1 -i "$srcdir/$_pkgname-$pkgver-musl-1.patch"
+    #patch -p1 -i "$srcdir/$_pkgname-$pkgver.patch"
 }
 
 build() {
