@@ -1,0 +1,50 @@
+
+# Maintainer: Nathaniel Cook <nvcook42@gmail.com>
+pkgname=libstdc++
+_pkgname=gcc
+pkgver=4.9.0
+pkgrel=1
+pkgdesc="libstdc++"
+arch=(arm)
+url="https://gcc.gnu.org/"
+license=('GPL')
+makedepends=('glibc' 'gcc-newlib-ct')
+options=(!strip)
+
+
+source=("ftp://gcc.gnu.org/pub/gcc/releases/$_pkgname-$pkgver/$_pkgname-$pkgver.tar.bz2")
+
+md5sums=('9709b49ae0e904cbb0a6a1b62853b556')
+
+
+build() {
+    _builddir="$srcdir/$_pkgname-build"
+    rm -rf $_builddir
+    mkdir $_builddir
+    cd $_builddir
+    $srcdir/$_pkgname-$pkgver/$pkgname-v3/configure \
+        --prefix=$_ct_prefix \
+        --build=$CHOST \
+        --host=$CHOST \
+        --target=$_target \
+        --disable-nls \
+        --disable-shared \
+        --disable-multilib \
+        --disable-libstdcxx-threads \
+        --disable-libstdcxx-pch \
+        --with-gxx-include-dir=$_ct_prefix/$_target/include/c++/$pkgver
+
+    make
+}
+
+check() {
+    cd "$srcdir/$_pkgname-$pkgver"
+    #make -k check
+}
+
+package() {
+    _builddir="$srcdir/$_pkgname-build"
+    cd $_builddir
+    PATH=$_ct_path:$PATH
+    make DESTDIR="$pkgdir/" -j1 install
+}

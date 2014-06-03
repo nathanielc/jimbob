@@ -1,50 +1,49 @@
 
 # Maintainer: Nathaniel Cook <nvcook42@gmail.com>
-pkgname=gcc-ct
+pkgname='gcc-ct'
 _pkgname=gcc
-pkgver=4.7.3
+pkgver=4.9.0
 pkgrel=1
-pkgdesc="GCC cross compiler for ARM EABI"
+pkgdesc="GCC cross compiler for ARM EABI and for a newlib"
 arch=(arm)
 url="https://gcc.gnu.org/"
 license=('GPL')
-makedepends=('binutils-ct' 'kernel-headers' 'musl' 'musl-devel')
-replaces=('gcc-newlib-ct')
+makedepends=('binutils-ct')
+options=(!strip)
 
 _mpfr_ver=3.1.2
-_gmp_ver=5.1.2
-_mpc_ver=1.0.1
+_gmp_ver=6.0.0
+_mpc_ver=1.0.2
 
 source=("ftp://gcc.gnu.org/pub/gcc/releases/$_pkgname-$pkgver/$_pkgname-$pkgver.tar.bz2"
         "http://gforge.inria.fr/frs/download.php/32210/mpfr-$_mpfr_ver.tar.bz2"
-        "http://ftp.gnu.org/gnu/gmp/gmp-$_gmp_ver.tar.bz2"
+        "http://ftp.gnu.org/gnu/gmp/gmp-${_gmp_ver}a.tar.bz2"
         "http://www.multiprecision.org/mpc/download/mpc-$_mpc_ver.tar.gz"
-        "$_pkgname-$pkgver-musl-1.patch")
+        )
 
-md5sums=('86f428a30379bdee0224e353ee2f999e'
+md5sums=('9709b49ae0e904cbb0a6a1b62853b556'
          'ee2c3ac63bf0c2359bf08fc3ee094c19'
-         '7e3516128487956cd825fef01aafe4bc'
-         'b32a2e1a3daa392372fbd586d1ed3679'
-         '5b43765740ca9865b8afe3cc945a3f5d')
+         'b7ff2d88cae7f8085bd5006096eed470'
+         '68fadff3358fb3e7976c7a398a0af4c3')
 
 
 prepare() {
     cd "$srcdir/$_pkgname-$pkgver"
-
-    patch -p1 -i "$srcdir/$_pkgname-$pkgver-musl-1.patch"
 
     #Extract deps
     tar xf ../mpfr-$_mpfr_ver.tar.bz2
     rm -rf mpfr
     mv -v mpfr-$_mpfr_ver mpfr
 
-    tar xf ../gmp-$_gmp_ver.tar.bz2
+    tar xf ../gmp-${_gmp_ver}a.tar.bz2
     rm -rf gmp
     mv -v gmp-$_gmp_ver gmp
 
     tar xf ../mpc-$_mpc_ver.tar.gz
     rm -rf mpc
     mv -v mpc-$_mpc_ver mpc
+
+    sed -i '/k prot/agcc_cv_libc_provides_ssp=yes' gcc/configure
 }
 
 build() {
@@ -57,6 +56,7 @@ build() {
         --build=$CHOST \
         --host=$CHOST \
         --target=$_target \
+        --with-local-prefix=$_ct_prefix \
         --with-sysroot=$_ct_sysroot \
         --with-build-time-tools=$_ct_utils_path \
         --with-mpfr-include=$srcdir/$_pkgname-$pkgver/mpfr/src \
@@ -64,12 +64,15 @@ build() {
         --with-arch=$_arm_arch \
         --with-float=$_float \
         --with-fpu=$_fpu \
+        --enable-clocale=gnu \
         --enable-languages=c,c++ \
-        --enable-c99 \
-        --enable-long-long \
-        --disable-nls \
-        --disable-libmudflap \
-        --disable-multilib
+        --enable-shared \
+        --enable-threads=posix \
+        --enable-__cxa_atexit \
+        --disable-libstdcxx-pch \
+        --disable-multilib \
+        --disable-bootstrap \
+        --disable-libgomp
 
     make
 }
@@ -86,6 +89,5 @@ package() {
     make DESTDIR="$pkgdir/" -j1 install
 
     #Remove conflicting files
-    rm $pkgdir/$_ct_prefix/share/info/dir
-    rm $pkgdir/$_ct_prefix/lib64/libiberty.a
+    rm  $pkgdir/$_ct_prefix/share/info/dir
 }

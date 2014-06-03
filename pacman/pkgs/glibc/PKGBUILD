@@ -105,7 +105,7 @@ package() {
   rm -f ${pkgdir}/etc/ld.so.{cache,conf}
 
   # Remove static libs
-  rm $pkgdir/usr/lib/*.a
+  #rm $pkgdir/usr/lib/*.a
 
   #install -dm755 ${pkgdir}/usr/lib/{locale,systemd/system,tmpfiles.d}
 
@@ -135,6 +135,8 @@ package() {
   $STRIP $STRIP_BINARIES usr/bin/{gencat,getconf,getent,iconv,iconvconfig} \
                         usr/bin/{ldconfig,locale,localedef,nscd,makedb} \
                         usr/bin/{pcprofiledump,pldd,rpcgen,sln,sprof} \
+
+  $STRIP $STRIP_STATIC usr/lib/*.a
 
   $STRIP $STRIP_SHARED usr/lib/{libanl,libBrokenLocale,libcidn,libcrypt}-*.so \
                       usr/lib/libnss_{compat,db,dns,files,hesiod,nis,nisplus}-*.so \
