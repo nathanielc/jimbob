@@ -8,12 +8,12 @@ pkgdesc="Extended attribute support library for ACL support"
 arch=('arm')
 url="http://savannah.nongnu.org/projects/attr"
 license=('LGPL')
-depends=('musl')
+depends=('glibc')
 #makedepends=('gettext')
 replaces=('xfsattr')
 provides=('xfsattr')
 conflicts=('xfsattr')
-options=(!makeflags)
+options=(!strip !makeflags)
 source=("http://download.savannah.gnu.org/releases/$pkgname/$pkgname-$pkgver.src.tar.gz"{,.sig}
         "config.sub"
         )
@@ -59,4 +59,6 @@ package() {
 
     # remove conflicting manpages
     rm -rf "$pkgdir"/usr/share/man/man2
+
+    $STRIP $pkgdir/usr/bin/* $pkgdir/usr/lib/*.so
 }
