@@ -1,0 +1,44 @@
+# $Id$
+# Maintainer: Pierre Schmitz <pierre@archlinux.de>
+
+pkgname=zlib
+pkgver=1.2.8
+pkgrel=3
+pkgdesc='Compression library implementing the deflate compression method found in gzip and PKZIP'
+arch=(arm)
+license=('custom')
+url="http://www.zlib.net/"
+depends=('glibc')
+options=('staticlibs' !makeflags !strip)  # needed by binutils testsuite
+source=("http://zlib.net/current/zlib-${pkgver}.tar.gz")
+md5sums=('44d667c142d7cda120332623eab69f40')
+
+prepare() {
+    cd ${srcdir}/zlib-$pkgver
+    grep -A 24 '^  Copyright' zlib.h > LICENSE
+}
+
+build() {
+    cd ${srcdir}/zlib-$pkgver
+    source $_cross_env
+
+    ./configure \
+            --prefix=/usr
+    make
+}
+
+check() {
+    cd ${srcdir}/zlib-$pkgver
+    #Can't easily test cross compiled binaries
+    #make test
+}
+
+package() {
+    cd ${srcdir}/zlib-$pkgver
+    source $_cross_env
+    make install DESTDIR=${pkgdir}
+    install -D -m644 LICENSE ${pkgdir}/usr/share/licenses/zlib/LICENSE
+
+    $STRIP $pkgdir/usr/lib/*.a
+    $STRIP $pkgdir/usr/lib/*.so*
+}
